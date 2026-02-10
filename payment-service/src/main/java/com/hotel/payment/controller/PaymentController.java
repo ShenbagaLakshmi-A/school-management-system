@@ -1,13 +1,3 @@
-package com.hotel.payment.controller;
-
-import com.hotel.payment.dto.PaymentRequest;
-import com.hotel.payment.dto.PaymentResponse;
-import com.hotel.payment.entity.Payment;
-import com.hotel.payment.service.PaymentService;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
@@ -19,24 +9,17 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentResponse makePayment(@RequestBody PaymentRequest request) {
-        Payment payment = service.processPayment(request);
-
-        PaymentResponse response = new PaymentResponse();
-        response.setId(payment.getId());
-        response.setAmount(payment.getAmount());
-        response.setStatus(payment.getStatus());
-
-        return response;
-    }
-
-    @GetMapping
-    public List<Payment> getAllPayments() {
-        return service.getAllPayments();
+    public PaymentResponse createPayment(@RequestBody PaymentRequest request) {
+        return service.processPayment(request);
     }
 
     @GetMapping("/{id}")
-    public Payment getPaymentById(@PathVariable Long id) {
+    public PaymentResponse getPayment(@PathVariable Long id) {
         return service.getPaymentById(id);
+    }
+
+    @GetMapping
+    public List<PaymentResponse> getAllPayments() {
+        return service.getAllPayments();
     }
 }

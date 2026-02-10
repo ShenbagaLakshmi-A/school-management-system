@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HotelServiceImpl implements HotelService {
@@ -28,35 +29,33 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidHotelException("Hotel name and total rooms are mandatory");
         }
 
-        Hotel hotel = new Hotel(
-                null,
-                request.getName(),
-                request.getCity(),
-                request.getAddress(),
-                request.getTotalRooms(),
-                request.getTotalRooms()
-        );
+        // 🔹 Correct mapping: DTO → Entity
+        Hotel hotel = new Hotel();
+        hotel.setName(request.getName());
+        hotel.setLocation(request.getCity());          // map city → location
+        hotel.setTotalRooms(request.getTotalRooms());
+        hotel.setAvailableRooms(request.getTotalRooms());
 
         Hotel saved = repository.save(hotel);
 
+        // 🔹 Correct mapping: Entity → ResponseDTO
         return new HotelResponseDTO(
                 saved.getId(),
                 saved.getName(),
-                saved.getCity(),
+                saved.getLocation(),          // map location → city
                 saved.getAvailableRooms()
         );
     }
 
     @Override
     public HotelResponseDTO getHotelById(Long id) {
-
         Hotel hotel = repository.findById(id)
                 .orElseThrow(() -> new HotelNotFoundException(id));
 
         return new HotelResponseDTO(
                 hotel.getId(),
                 hotel.getName(),
-                hotel.getCity(),
+                hotel.getLocation(),            // map location → city
                 hotel.getAvailableRooms()
         );
     }
@@ -68,19 +67,15 @@ public class HotelServiceImpl implements HotelService {
                 .map(h -> new HotelResponseDTO(
                         h.getId(),
                         h.getName(),
-                        h.getCity(),
+                        h.getLocation(),        // map location → city
                         h.getAvailableRooms()
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Called by Reservation Service
-     */
     @Transactional
     @Override
     public void allocateRoom(Long hotelId) {
-
         Hotel hotel = repository.findById(hotelId)
                 .orElseThrow(() -> new HotelNotFoundException(hotelId));
 
@@ -92,13 +87,9 @@ public class HotelServiceImpl implements HotelService {
         repository.save(hotel);
     }
 
-    /**
-     * Used for cancellation / rollback
-     */
     @Transactional
     @Override
     public void releaseRoom(Long hotelId) {
-
         Hotel hotel = repository.findById(hotelId)
                 .orElseThrow(() -> new HotelNotFoundException(hotelId));
 

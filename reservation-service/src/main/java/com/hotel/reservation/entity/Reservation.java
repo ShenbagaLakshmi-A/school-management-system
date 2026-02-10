@@ -1,13 +1,10 @@
 package com.hotel.reservation.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "reservations")
 public class Reservation {
 
     @Id
@@ -16,12 +13,7 @@ public class Reservation {
 
     private Long customerId;
     private Long hotelId;
+    private Long paymentId;
 
-    private String roomType;
-    private String checkInDate;
-    private String checkOutDate;
-
-    private String status; // CREATED, CONFIRMED, FAILED
-
-    private Double amount;
+    private String status;
 }

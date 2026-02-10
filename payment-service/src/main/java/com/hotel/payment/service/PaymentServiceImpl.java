@@ -18,24 +18,32 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment processPayment(PaymentRequest request) {
+	public PaymentResponse processPayment(PaymentRequest request) {
 
-        if (request.getReservationId() == null || request.getAmount() == null) {
-            throw new PaymentException("Invalid payment request");
-        }
+		if (request.getReservationId() == null || request.getAmount() == null) {
+			throw new PaymentException("Invalid payment request");
+		}
 
-        if (request.getAmount() <= 0) {
-            throw new PaymentException("Payment amount must be greater than zero");
-        }
+		if (request.getAmount() <= 0) {
+			throw new PaymentException("Payment amount must be greater than zero");
+		}
 
-        // 🔹 Simulate payment success
-        Payment payment = new Payment();
-        payment.setReservationId(request.getReservationId());
-        payment.setAmount(request.getAmount());
-        payment.setStatus("SUCCESS");
+		Payment payment = new Payment();
+		payment.setReservationId(request.getReservationId());
+		payment.setAmount(request.getAmount());
+		payment.setStatus("SUCCESS");
 
-        return repository.save(payment);
-    }
+		Payment saved = repository.save(payment);
+
+		// Map to DTO
+		PaymentResponse response = new PaymentResponse();
+		response.setId(saved.getId());
+		response.setAmount(saved.getAmount());
+		response.setStatus(saved.getStatus());
+
+		return response;
+	}
+
 
     @Override
     public List<Payment> getAllPayments() {
