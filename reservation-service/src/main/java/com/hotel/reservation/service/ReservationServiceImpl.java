@@ -50,10 +50,16 @@ public class ReservationServiceImpl implements ReservationService {
         if (paymentResponse != null && "SUCCESS".equalsIgnoreCase((String) paymentResponse.get("status"))) {
             savedReservation.setStatus("CONFIRMED");
             savedReservation.setPaymentId(Long.valueOf(String.valueOf(paymentResponse.get("id"))));
-            sendNotification("Reservation CONFIRMED for ID " + savedReservation.getId());
+
+            // Send notification and capture notificationId
+            Long notificationId = sendNotification("Reservation CONFIRMED for ID " + savedReservation.getId());
+            savedReservation.setNotificationId(notificationId);
+
         } else {
             savedReservation.setStatus("FAILED");
-            sendNotification("Reservation FAILED for ID " + savedReservation.getId());
+
+            Long notificationId = sendNotification("Reservation FAILED for ID " + savedReservation.getId());
+            savedReservation.setNotificationId(notificationId);
         }
 
         Reservation finalReservation = reservationRepository.save(savedReservation);
@@ -87,6 +93,8 @@ public class ReservationServiceImpl implements ReservationService {
             );
         } catch (HttpClientErrorException.NotFound ex) {
             throw new RuntimeException("Customer not found with id: " + customerId);
+        } catch (Exception ex) {
+            throw new RuntimeException("Customer service unavailable: " + ex.getMessage());
         }
     }
 
@@ -98,6 +106,8 @@ public class ReservationServiceImpl implements ReservationService {
             );
         } catch (HttpClientErrorException.NotFound ex) {
             throw new RuntimeException("Hotel not found with id: " + hotelId);
+        } catch (Exception ex) {
+            throw new RuntimeException("Hotel service unavailable: " + ex.getMessage());
         }
     }
 
@@ -105,7 +115,7 @@ public class ReservationServiceImpl implements ReservationService {
         try {
             Map<String, Object> paymentRequest = Map.of(
                     "reservationId", reservation.getId(),
-                    "amount", amount != null ? amount : 1000.0, // fallback if null
+                    "amount", amount != null ? amount : 1000.0,
                     "status", "INITIATED"
             );
 
@@ -116,23 +126,31 @@ public class ReservationServiceImpl implements ReservationService {
             );
 
         } catch (Exception ex) {
+            System.err.println("Payment service failed: " + ex.getMessage());
             return null;
         }
     }
 
-    private void sendNotification(String message) {
+    private Long sendNotification(String message) {
         try {
-            Map<String, String> notificationRequest = Map.of(
-                    "message", message
-            );
-            restTemplate.postForObject(
+            Map<String, String> notificationRequest = Map.of("message", message);
+
+            // Capture response with notification ID
+            Map<String, Object> response = restTemplate.postForObject(
                     "http://notification-service:8085/notifications",
                     notificationRequest,
-                    Void.class
+                    Map.class
             );
-        } catch (Exception ignored) {
-            // notification failure should NOT break main flow
+
+            if (response != null && response.get("id") != null) {
+                return Long.valueOf(String.valueOf(response.get("id")));
+            }
+
+        } catch (Exception ex) {
+            System.err.println("Notification failed: " + ex.getMessage());
         }
+
+        return null;
     }
 
     // -------------------- DTO Mapping --------------------
@@ -146,6 +164,7 @@ public class ReservationServiceImpl implements ReservationService {
         response.setCheckOut(reservation.getCheckOut());
         response.setStatus(reservation.getStatus());
         response.setPaymentId(reservation.getPaymentId());
+        response.setNotificationId(reservation.getNotificationId());
         return response;
     }
 }

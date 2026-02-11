@@ -12,10 +12,11 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long customerId;   // ID of the customer making the reservation
-    private Long hotelId;      // ID of the hotel being reserved
-    private String checkIn;    // check-in date as String, e.g., "2026-02-15"
-    private String checkOut;   // check-out date as String, e.g., "2026-02-20"
-    private String status;     // Reservation status: CREATED / CONFIRMED / FAILED
-    private Long paymentId;    // ID of the payment, assigned after payment confirmation
+    private Long customerId;       // ID of the customer making the reservation
+    private Long hotelId;          // ID of the hotel being reserved
+    private String checkIn;        // check-in date as String, e.g., "2026-02-15"
+    private String checkOut;       // check-out date as String, e.g., "2026-02-20"
+    private String status;         // Reservation status: CREATED / CONFIRMED / FAILED
+    private Long paymentId;        // ID of the payment, assigned after payment confirmation
+    private Long notificationId;   // ID of the notification, assigned after notification is sent
 }
