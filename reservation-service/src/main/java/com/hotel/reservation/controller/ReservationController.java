@@ -1,6 +1,7 @@
 package com.hotel.reservation.controller;
 
-import com.hotel.reservation.entity.Reservation;
+import com.hotel.reservation.dto.ReservationRequest;
+import com.hotel.reservation.dto.ReservationResponse;
 import com.hotel.reservation.service.ReservationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,24 +11,24 @@ import java.util.List;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService service;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationService service) {
-        this.service = service;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @PostMapping
-    public Reservation create(@RequestBody Reservation reservation) {
-        return service.createReservation(reservation);
-    }
-
-    @GetMapping
-    public List<Reservation> getAll() {
-        return service.getAllReservations();
+    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+        return reservationService.createReservation(request);
     }
 
     @GetMapping("/{id}")
-    public Reservation getById(@PathVariable Long id) {
-        return service.getReservationById(id);
+    public ReservationResponse getReservation(@PathVariable Long id) {
+        return reservationService.getReservationById(id);
+    }
+
+    @GetMapping
+    public List<ReservationResponse> getAllReservations() {
+        return reservationService.getAllReservations();
     }
 }

@@ -1,14 +1,15 @@
 package com.hotel.reservation.service;
 
-import com.hotel.reservation.entity.Reservation;
+import com.hotel.reservation.dto.ReservationRequest;
+import com.hotel.reservation.dto.ReservationResponse;
 
 import java.util.List;
 
 public interface ReservationService {
 
-    Reservation createReservation(Reservation reservation);
+    ReservationResponse createReservation(ReservationRequest request);
 
-    List<Reservation> getAllReservations();
+    ReservationResponse getReservationById(Long id);
 
-    Reservation getReservationById(Long id);
+    List<ReservationResponse> getAllReservations();
 }

@@ -7,6 +7,7 @@ import com.hotel.hotel.exception.HotelNotFoundException;
 import com.hotel.hotel.exception.InvalidHotelException;
 import com.hotel.hotel.exception.NoRoomsAvailableException;
 import com.hotel.hotel.repository.HotelRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,20 +30,19 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidHotelException("Hotel name and total rooms are mandatory");
         }
 
-        // 🔹 Correct mapping: DTO → Entity
         Hotel hotel = new Hotel();
         hotel.setName(request.getName());
-        hotel.setLocation(request.getCity());          // map city → location
+        hotel.setCity(request.getCity());
+        hotel.setAddress(request.getAddress());
         hotel.setTotalRooms(request.getTotalRooms());
         hotel.setAvailableRooms(request.getTotalRooms());
 
         Hotel saved = repository.save(hotel);
 
-        // 🔹 Correct mapping: Entity → ResponseDTO
         return new HotelResponseDTO(
                 saved.getId(),
                 saved.getName(),
-                saved.getLocation(),          // map location → city
+                saved.getCity(),
                 saved.getAvailableRooms()
         );
     }
@@ -55,7 +55,7 @@ public class HotelServiceImpl implements HotelService {
         return new HotelResponseDTO(
                 hotel.getId(),
                 hotel.getName(),
-                hotel.getLocation(),            // map location → city
+                hotel.getCity(),
                 hotel.getAvailableRooms()
         );
     }
@@ -67,7 +67,7 @@ public class HotelServiceImpl implements HotelService {
                 .map(h -> new HotelResponseDTO(
                         h.getId(),
                         h.getName(),
-                        h.getLocation(),        // map location → city
+                        h.getCity(),
                         h.getAvailableRooms()
                 ))
                 .collect(Collectors.toList());
@@ -84,7 +84,6 @@ public class HotelServiceImpl implements HotelService {
         }
 
         hotel.setAvailableRooms(hotel.getAvailableRooms() - 1);
-        repository.save(hotel);
     }
 
     @Transactional
@@ -94,6 +93,5 @@ public class HotelServiceImpl implements HotelService {
                 .orElseThrow(() -> new HotelNotFoundException(hotelId));
 
         hotel.setAvailableRooms(hotel.getAvailableRooms() + 1);
-        repository.save(hotel);
     }
 }

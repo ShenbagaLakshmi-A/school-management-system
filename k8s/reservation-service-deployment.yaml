@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservation-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reservation-service
+  template:
+    metadata:
+      labels:
+        app: reservation-service
+    spec:
+      containers:
+        - name: reservation-service
+          image: reservation-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8082
+          env:
+            - name: CUSTOMER_SERVICE_URL
+              value: "http://customer-service:8081"
+            - name: HOTEL_SERVICE_URL
+              value: "http://hotel-service:8083"
+            - name: PAYMENT_SERVICE_URL
+              value: "http://payment-service:8084"
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service:8085"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/reservation_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update

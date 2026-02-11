@@ -1,12 +1,8 @@
 package com.hotel.notification.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "notifications")
 public class Notification {
 
@@ -14,9 +10,26 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;      // EMAIL, SMS
-    private String recipient; // email / phone
+    private Long reservationId;
     private String message;
 
-    private String status;    // SENT, FAILED
+    public Long getId() {
+        return id;
+    }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

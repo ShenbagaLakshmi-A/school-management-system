@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: payment-service:1.0
+          image: payment-service:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8084
@@ -25,3 +25,5 @@ spec:
               value: postgres
             - name: SPRING_DATASOURCE_PASSWORD
               value: postgres
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update

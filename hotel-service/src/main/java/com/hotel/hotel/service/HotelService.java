@@ -17,3 +17,4 @@ public interface HotelService {
 
     void releaseRoom(Long hotelId);
 }
+

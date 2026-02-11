@@ -2,7 +2,6 @@ package com.hotel.notification.controller;
 
 import com.hotel.notification.dto.NotificationRequest;
 import com.hotel.notification.dto.NotificationResponse;
-import com.hotel.notification.entity.Notification;
 import com.hotel.notification.service.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,23 +18,18 @@ public class NotificationController {
     }
 
     @PostMapping
-    public NotificationResponse send(@RequestBody NotificationRequest request) {
-        Notification notification = service.sendNotification(request);
-
-        NotificationResponse response = new NotificationResponse();
-        response.setId(notification.getId());
-        response.setStatus(notification.getStatus());
-
-        return response;
+    public NotificationResponse sendNotification(
+            @RequestBody NotificationRequest request) {
+        return service.sendNotification(request);
     }
 
     @GetMapping
-    public List<Notification> getAll() {
+    public List<NotificationResponse> getAllNotifications() {
         return service.getAllNotifications();
     }
 
     @GetMapping("/{id}")
-    public Notification getById(@PathVariable Long id) {
+    public NotificationResponse getNotificationById(@PathVariable Long id) {
         return service.getNotificationById(id);
     }
 }

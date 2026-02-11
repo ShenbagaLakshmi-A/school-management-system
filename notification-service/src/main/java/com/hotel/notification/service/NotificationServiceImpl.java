@@ -1,12 +1,13 @@
 package com.hotel.notification.service;
 
 import com.hotel.notification.dto.NotificationRequest;
+import com.hotel.notification.dto.NotificationResponse;
 import com.hotel.notification.entity.Notification;
-import com.hotel.notification.exception.NotificationException;
 import com.hotel.notification.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -18,29 +19,38 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification sendNotification(NotificationRequest request) {
-
-        if (request.getType() == null || request.getRecipient() == null) {
-            throw new NotificationException("Invalid notification request");
-        }
+    public NotificationResponse sendNotification(NotificationRequest request) {
 
         Notification notification = new Notification();
-        notification.setType(request.getType());
-        notification.setRecipient(request.getRecipient());
+        notification.setReservationId(request.getReservationId());
         notification.setMessage(request.getMessage());
-        notification.setStatus("SENT"); // simulated
 
-        return repository.save(notification);
+        Notification saved = repository.save(notification);
+
+        return mapToResponse(saved);
     }
 
     @Override
-    public List<Notification> getAllNotifications() {
-        return repository.findAll();
+    public List<NotificationResponse> getAllNotifications() {
+        return repository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Notification getNotificationById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotificationException("Notification not found"));
+    public NotificationResponse getNotificationById(Long id) {
+        Notification notification = repository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Notification not found with id: " + id));
+
+        return mapToResponse(notification);
+    }
+
+    private NotificationResponse mapToResponse(Notification notification) {
+        NotificationResponse response = new NotificationResponse();
+        response.setId(notification.getId());
+        response.setStatus("SENT");
+        return response;
     }
 }

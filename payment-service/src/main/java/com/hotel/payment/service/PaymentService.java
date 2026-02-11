@@ -1,15 +1,11 @@
 package com.hotel.payment.service;
 
 import com.hotel.payment.dto.PaymentRequest;
-import com.hotel.payment.entity.Payment;
-
-import java.util.List;
+import com.hotel.payment.dto.PaymentResponse;
 
 public interface PaymentService {
 
-    Payment processPayment(PaymentRequest request);
+    PaymentResponse createPayment(PaymentRequest request);
 
-    List<Payment> getAllPayments();
-
-    Payment getPaymentById(Long id);
+    PaymentResponse getPaymentById(Long id);
 }

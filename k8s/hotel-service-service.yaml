@@ -6,6 +6,6 @@ spec:
   selector:
     app: hotel-service
   ports:
-    - port: 8082
+    - port: 8083
       targetPort: 8083
   type: ClusterIP

@@ -1,12 +1,11 @@
 package com.hotel.payment.service;
 
 import com.hotel.payment.dto.PaymentRequest;
+import com.hotel.payment.dto.PaymentResponse;
 import com.hotel.payment.entity.Payment;
-import com.hotel.payment.exception.PaymentException;
 import com.hotel.payment.repository.PaymentRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -18,41 +17,32 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-	public PaymentResponse processPayment(PaymentRequest request) {
+    public PaymentResponse createPayment(PaymentRequest request) {
 
-		if (request.getReservationId() == null || request.getAmount() == null) {
-			throw new PaymentException("Invalid payment request");
-		}
+        Payment payment = new Payment();
+        payment.setReservationId(request.getReservationId());
+        payment.setAmount(request.getAmount());
+        payment.setStatus("SUCCESS"); // deterministic for demo
 
-		if (request.getAmount() <= 0) {
-			throw new PaymentException("Payment amount must be greater than zero");
-		}
+        Payment saved = repository.save(payment);
 
-		Payment payment = new Payment();
-		payment.setReservationId(request.getReservationId());
-		payment.setAmount(request.getAmount());
-		payment.setStatus("SUCCESS");
-
-		Payment saved = repository.save(payment);
-
-		// Map to DTO
-		PaymentResponse response = new PaymentResponse();
-		response.setId(saved.getId());
-		response.setAmount(saved.getAmount());
-		response.setStatus(saved.getStatus());
-
-		return response;
-	}
-
-
-    @Override
-    public List<Payment> getAllPayments() {
-        return repository.findAll();
+        return new PaymentResponse(
+                saved.getId(),
+                saved.getReservationId(),
+                saved.getStatus()
+        );
     }
 
     @Override
-    public Payment getPaymentById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new PaymentException("Payment not found"));
+    public PaymentResponse getPaymentById(Long id) {
+
+        Payment payment = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        return new PaymentResponse(
+                payment.getId(),
+                payment.getReservationId(),
+                payment.getStatus()
+        );
     }
 }

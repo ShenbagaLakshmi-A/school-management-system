@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PaymentRequest {
-    private Long reservationId;
-    private Double amount;
+    private Long reservationId;  // Reservation ID
+    private Double amount;       // Payment amount
 }
