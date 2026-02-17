@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hotel-gateway
+  template:
+    metadata:
+      labels:
+        app: hotel-gateway
+    spec:
+      containers:
+        - name: hotel-gateway
+          image: hotel-gateway:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080   # app port
+
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: hotel-gateway
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka/
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xms256m -Xmx512m"
+
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "200m"
+            limits:
+              memory: "800Mi"
+              cpu: "400m"

@@ -15,7 +15,7 @@ spec:
       containers:
         - name: customer-service
           image: customer-service:latest
-          imagePullPolicy: Never   # 🔴 VERY IMPORTANT
+          imagePullPolicy: Never
           ports:
             - containerPort: 8081
           env:
@@ -27,3 +27,23 @@ spec:
               value: postgres
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: update
+            - name: SPRING_APPLICATION_NAME
+              value: customer-service
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka
+            - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+              value: "true"
+            - name: EUREKA_CLIENT_FETCH_REGISTRY
+              value: "true"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xms128m -Xmx256m"
+
+          resources:
+            requests:
+              memory: "180Mi"
+              cpu: "150m"
+            limits:
+              memory: "300Mi"
+              cpu: "300m"
