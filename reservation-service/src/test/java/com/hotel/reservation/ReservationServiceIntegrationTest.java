@@ -1,9 +1,13 @@
-package com.hotel.reservation.service;
+package com.hotel.reservation;
 
 import com.hotel.reservation.dto.ReservationRequest;
 import com.hotel.reservation.dto.ReservationResponse;
 import com.hotel.reservation.entity.Reservation;
 import com.hotel.reservation.repository.ReservationRepository;
+import com.hotel.reservation.service.NotificationClientService;
+import com.hotel.reservation.service.PaymentClientService;
+import com.hotel.reservation.service.ReservationServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

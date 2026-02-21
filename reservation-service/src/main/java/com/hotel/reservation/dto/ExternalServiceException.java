@@ -1,7 +1,7 @@
-package com.hotel.reservation.exception;
+//package com.hotel.reservation.exception;
 
-public class ExternalServiceException extends RuntimeException {
-    public ExternalServiceException(String message) {
-        super(message);
-    }
-}
+//public class ExternalServiceException extends RuntimeException {
+   // public ExternalServiceException(String message) {
+        //super(message);
+   // }
+//}
