@@ -17,8 +17,7 @@ spec:
           image: hotel-gateway:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8080   # app port
-
+            - containerPort: 8080
           env:
             - name: SPRING_APPLICATION_NAME
               value: hotel-gateway
@@ -28,7 +27,6 @@ spec:
               value: "true"
             - name: JAVA_TOOL_OPTIONS
               value: "-Xms256m -Xmx512m"
-
           resources:
             requests:
               memory: "500Mi"

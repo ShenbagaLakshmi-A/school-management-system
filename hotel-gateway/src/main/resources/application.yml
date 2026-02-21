@@ -1,6 +1,5 @@
 server:
   port: 8080
-  address: 0.0.0.0
 
 spring:
   application:
@@ -10,25 +9,29 @@ spring:
     gateway:
       routes:
         - id: customer-service
-          uri: lb://CUSTOMER-SERVICE
+          uri: lb://customer-service
           predicates:
-            - Path=/customer/**
+            - Path=/customers/**
+
         - id: hotel-service
-          uri: lb://HOTEL-SERVICE
+          uri: lb://hotel-service
           predicates:
-            - Path=/hotel/**
+            - Path=/hotels/**
+
         - id: reservation-service
-          uri: lb://RESERVATION-SERVICE
+          uri: lb://reservation-service
           predicates:
-            - Path=/reservation/**
+            - Path=/reservations/**
+
         - id: payment-service
-          uri: lb://PAYMENT-SERVICE
+          uri: lb://payment-service
           predicates:
-            - Path=/payment/**
+            - Path=/payments/**
+
         - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
+          uri: lb://notification-service
           predicates:
-            - Path=/notification/**
+            - Path=/notifications/**
 
 eureka:
   client:
@@ -36,12 +39,3 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always

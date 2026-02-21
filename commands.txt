@@ -1,0 +1,41 @@
+$ kubectl port-forward deployment/eureka-server 8761:8761
+$ kubectl port-forward deployment/hotel-gateway 8080:8080
+
+Kubectl port-forward svc/reservation-service 8082:8082
+
+kubectl port-forward reservation-service-7cc69cb776-4nqhf 8082:8082
+
+mvn clean install -DskipTests
+
+eval $(minikube docker-env)
+docker build --no-cache -t ${image}:latest ./$image
+
+# Make sure the script is executable
+chmod +x resume.sh
+
+# Run the script
+./resume.sh
+
+kubectl scale deployment payment-service --replicas=0
+
+kubectl scale deployment payment-service --replicas=1
+
+
+http://localhost:8082/reservations
+
+http://localhost:8082/actuator/health
+
+http://localhost:8082/actuator/circuitbreakers
+
+kubectl rollout restart deployment reservation-service
+
+java -jar target/monitoring-dashboard-0.0.1-SNAPSHOT.jar
+
+http://localhost:9001/
+
+http://localhost:8761
+
+
+kubectl exec -it postgres-767b4cd55c-9lk2x -- bash
+psql -U postgres
+CREATE DATABASE customer_db;

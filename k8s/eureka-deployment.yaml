@@ -15,16 +15,20 @@ spec:
       containers:
         - name: eureka-server
           image: eureka-server:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 8761
-
           env:
             - name: SPRING_APPLICATION_NAME
               value: eureka-server
+            - name: SERVER_PORT
+              value: "8761"
+            - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+              value: "false"
+            - name: EUREKA_CLIENT_FETCH_REGISTRY
+              value: "false"
             - name: JAVA_TOOL_OPTIONS
               value: "-Xms128m -Xmx384m"
-
           resources:
             requests:
               memory: "250Mi"

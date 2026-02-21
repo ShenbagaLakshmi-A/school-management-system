@@ -21,6 +21,18 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - hotel-network
+
   customer-service:
     build: ./customer-service
     container_name: customer-service
@@ -80,6 +92,8 @@ services:
         condition: service_started
       payment-service:
         condition: service_started
+      rabbitmq:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/reservation_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -87,6 +101,10 @@ services:
       CUSTOMER_SERVICE_URL: http://customer-service:8081
       HOTEL_SERVICE_URL: http://hotel-service:8083
       PAYMENT_SERVICE_URL: http://payment-service:8084
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     networks:
       - hotel-network
 
@@ -95,6 +113,14 @@ services:
     container_name: notification-service
     ports:
       - "8085:8085"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     networks:
       - hotel-network
 

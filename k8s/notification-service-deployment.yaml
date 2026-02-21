@@ -38,6 +38,8 @@ spec:
               value: "true"
             - name: JAVA_TOOL_OPTIONS
               value: "-Xms128m -Xmx256m"
+            - name: SPRING_AMQP_DESERIALIZATION_TRUST_ALL
+              value: "true"
 
           resources:
             requests:
