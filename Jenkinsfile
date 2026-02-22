@@ -2,16 +2,19 @@ pipeline {
     agent any
 
     environment {
-        // Docker Hub credentials ID in Jenkins
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
-        // Docker image name
         IMAGE_NAME = 'shenbaga/hotel-reservation-system:latest'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git', credentialsId: 'jenkins-container-ssh'
+                // Checkout the correct branch with credentials
+                git(
+                    url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git',
+                    branch: 'main',                    // ✅ explicitly checkout 'main'
+                    credentialsId: 'jenkins-container-ssh'  // ✅ make sure this exists
+                )
             }
         }
 
