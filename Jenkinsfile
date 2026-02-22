@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven-3.9.4'   // Name of the Maven installation in Jenkins Global Tool Configuration
+        jdk 'OpenJDK-17'      // Name of the JDK installation (matches your java.version)
+    }
+
     environment {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         IMAGE_NAME = 'shenbaga/hotel-reservation-system:latest'
@@ -9,11 +14,10 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout the correct branch with credentials
                 git(
                     url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git',
-                    branch: 'main',                    // ✅ explicitly checkout 'main'
-                    credentialsId: 'jenkins-container-ssh'  // ✅ make sure this exists
+                    branch: 'main',                    
+                    credentialsId: 'jenkins-container-ssh'
                 )
             }
         }
