@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.9.4'   // Name of the Maven installation in Jenkins Global Tool Configuration
-        jdk 'OpenJDK-17'      // Name of the JDK installation (matches your java.version)
+        maven 'Maven-3.9.4'   // Make sure this exists in Global Tool Configuration
+        jdk 'OpenJDK-17'      // Make sure this exists in Global Tool Configuration
     }
 
     environment {
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 git(
                     url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git',
-                    branch: 'main',                    
+                    branch: 'main',
                     credentialsId: 'jenkins-container-ssh'
                 )
             }
@@ -29,21 +29,22 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Check') {
             steps {
-                echo "Building Docker image: ${IMAGE_NAME}"
-                script {
-                    docker.build("${IMAGE_NAME}")
-                }
+                echo 'Checking Docker availability...'
+                sh 'docker --version'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
-                echo "Pushing Docker image to Docker Hub"
                 script {
+                    echo "Building Docker image: ${IMAGE_NAME}"
+                    def appImage = docker.build("${IMAGE_NAME}")
+                    
+                    echo "Pushing Docker image to Docker Hub"
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        docker.image("${IMAGE_NAME}").push()
+                        appImage.push()
                     }
                 }
             }
