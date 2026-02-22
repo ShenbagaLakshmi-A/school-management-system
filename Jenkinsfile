@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git', credentialsId: 'github-ssh'
+                git url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git', credentialsId: 'jenkins-container-ssh'
             }
         }
 
