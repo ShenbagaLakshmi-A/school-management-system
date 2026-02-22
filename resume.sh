@@ -112,6 +112,8 @@ kubectl apply -f k8s/payment-service.yaml
 kubectl apply -f k8s/rabbitmq-deployment.yaml
 kubectl apply -f k8s/rabbitmq-service.yaml
 
+kubectl apply -f k8s/logging.yaml
+
 ###############################################
 # STEP 7 - Wait for all deployments to be available
 ###############################################

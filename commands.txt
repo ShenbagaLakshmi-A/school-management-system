@@ -39,3 +39,56 @@ http://localhost:8761
 kubectl exec -it postgres-767b4cd55c-9lk2x -- bash
 psql -U postgres
 CREATE DATABASE customer_db;
+
+
+kubectl scale deployment hotel-service --replicas=0
+kubectl scale deployment notification-service --replicas=0
+kubectl scale deployment payment-service --replicas=0
+kubectl scale deployment reservation-service --replicas=0
+
+
+---------------- logging ----------------------------------------------
+minikube ssh
+docker pull docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+docker pull docker.elastic.co/kibana/kibana:8.12.0
+exit
+
+
+kubectl get pods -n logging
+
+
+kubectl port-forward svc/elasticsearch 9200:9200 -n logging
+
+kubectl port-forward svc/kibana 5601:5601 -n logging
+
+http://localhost:9200/_cat/indices?v
+
+
+kubectl port-forward svc/kibana <local-port>:5601 -n logging
+
+http://localhost:<local-port>
+
+kubectl describe pod elasticsearch-6b6c6cc4dc-hz485 -n logging
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
