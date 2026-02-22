@@ -1,15 +1,19 @@
 pipeline {
-    agent any  // Use the host Jenkins container/agent
+    agent any
+
+    tools {
+        maven 'Maven-3.9.4'   // Name of Maven in Jenkins Global Tool Configuration
+        jdk 'OpenJDK-17'      // Name of JDK in Jenkins Global Tool Configuration
+    }
 
     environment {
-        DOCKER_CREDENTIALS = 'dockerhub-credentials'             // Your Docker Hub credentials ID in Jenkins
-        IMAGE_NAME = 'shenbaga/hotel-reservation-system:latest' // Docker image name
+        DOCKER_CREDENTIALS = 'dockerhub-credentials'
+        IMAGE_NAME = 'shenbaga/hotel-reservation-system:latest'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo 'Checking out code from GitHub...'
                 git(
                     url: 'git@github.com:ShenbagaLakshmi-A/hotel-reservation-system.git',
                     branch: 'main',
@@ -25,16 +29,6 @@ pipeline {
             }
         }
 
-        stage('Docker Check') {
-            steps {
-                echo 'Verifying Docker CLI and daemon availability...'
-                sh '''
-                    docker --version || { echo "Docker CLI not found"; exit 1; }
-                    docker info || { echo "Cannot connect to Docker daemon"; exit 1; }
-                '''
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}"
@@ -45,10 +39,11 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo "Pushing Docker image to Docker Hub"
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        sh "docker push ${IMAGE_NAME}"
-                    }
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push ${IMAGE_NAME}
+                    '''
                 }
             }
         }
