@@ -1,94 +1,113 @@
-$ kubectl port-forward deployment/eureka-server 8761:8761
-$ kubectl port-forward deployment/hotel-gateway 8080:8080
+docker network create micro-net
 
-Kubectl port-forward svc/reservation-service 8082:8082
+docker restart student-service
 
-kubectl port-forward reservation-service-7cc69cb776-4nqhf 8082:8082
+docker stop eureka-server
+docker rm eureka-server
 
-mvn clean install -DskipTests
+docker stop student-service
+docker rm student-service
 
-eval $(minikube docker-env)
-docker build --no-cache -t ${image}:latest ./$image
+docker exec -it postgres psql -U postgres
 
-# Make sure the script is executable
-chmod +x resume.sh
+CREATE DATABASE student_db;
+CREATE DATABASE fee_db;
+CREATE DATABASE payment_db;
 
-# Run the script
-./resume.sh
+----------------------------------------------
 
-kubectl scale deployment payment-service --replicas=0
+docker run -d \
+  --name rabbitmq \
+  --network micro-net \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  rabbitmq:3-management
 
-kubectl scale deployment payment-service --replicas=1
+
+------------------------------------------
+
+docker run -d \
+--name postgres \
+--network micro-net \
+-e POSTGRES_DB=student_db \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=postgres \
+-p 5432:5432 \
+postgres:15
+
+docker run -d \
+--name postgresdb \
+--network micro-net \
+-e POSTGRES_DB=fee_db \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=postgres \
+-p 5432:5432 \
+postgres:15
+
+docker run -d \
+--name postgres \
+--network micro-net \
+-e POSTGRES_DB=payment_db \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=postgres \
+-p 5432:5432 \
+postgres:15
+
+----------------------------------------------------------------------
 
 
-http://localhost:8082/reservations
+docker build -t eureka-server:latest .
 
-http://localhost:8082/actuator/health
-
-http://localhost:8082/actuator/circuitbreakers
-
-kubectl rollout restart deployment reservation-service
-
-java -jar target/monitoring-dashboard-0.0.1-SNAPSHOT.jar
-
-http://localhost:9001/
+docker run -d \
+--name eureka-server \
+--network micro-net \
+-p 8761:8761 \
+eureka-server:latest
 
 http://localhost:8761
 
+-----------------------------------------------------
+docker ps
 
-kubectl exec -it postgres-767b4cd55c-9lk2x -- bash
-psql -U postgres
-CREATE DATABASE customer_db;
+docker build -t student-service:latest .
 
+docker images
 
-kubectl scale deployment hotel-service --replicas=0
-kubectl scale deployment notification-service --replicas=0
-kubectl scale deployment payment-service --replicas=0
-kubectl scale deployment reservation-service --replicas=0
+docker run -d \
+--name student-management-service \
+--network micro-net \
+-p 8085:8085 \
+student-management-service:latest
 
-
----------------- logging ----------------------------------------------
-minikube ssh
-docker pull docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-docker pull docker.elastic.co/kibana/kibana:8.12.0
-exit
-
-
-kubectl get pods -n logging
-
-
-kubectl port-forward svc/elasticsearch 9200:9200 -n logging
-
-kubectl port-forward svc/kibana 5601:5601 -n logging
-
-http://localhost:9200/_cat/indices?v
-
-
-kubectl port-forward svc/kibana <local-port>:5601 -n logging
-
-http://localhost:<local-port>
-
-kubectl describe pod elasticsearch-6b6c6cc4dc-hz485 -n logging
+docker logs -f student-service
 
 
 
+docker logs -f eureka-server
+
+docker build -t fee-management-service:latest .
+
+docker run -d \
+--name fee-management-service \
+--network micro-net \
+-p 8082:8082 \
+fee-management-service:latest
 
 
+docker build -t payment-service:latest .
 
+docker run -d \
+--name payment-service \
+--network micro-net \
+-p 8084:8084 \
+payment-service:latest
 
+docker run -d --name student-service --network micro-net -p 8080:8080 student-service-image
 
+docker build -t school-gateway:latest .
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+docker run -d \
+--name school-gateway \
+--network micro-net \
+-p 8080:8080 \
+school-gateway:latest

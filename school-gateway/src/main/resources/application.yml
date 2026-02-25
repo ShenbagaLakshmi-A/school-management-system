@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: school-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: student-management-service
+          uri: lb://student-management-service
+          predicates:
+            - Path=/api/students/**
+
+        - id: fee-service
+          uri: lb://fee-service
+          predicates:
+            - Path=/api/fees/**
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

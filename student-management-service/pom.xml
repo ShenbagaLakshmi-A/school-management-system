@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -5,7 +6,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Parent POM -->
+    <!-- Parent POM (Root Project) -->
     <parent>
         <groupId>com.school</groupId>
         <artifactId>school-management-system</artifactId>
@@ -13,11 +14,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.school</groupId>
-    <artifactId>payment-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>payment-service</name>
-    <description>Payment Service for School Management System</description>
+    <artifactId>student-management-service</artifactId>
+    <name>student-management-service</name>
+    <description>Student Management Service for Hotel/School System</description>
+    <packaging>jar</packaging>
 
     <dependencies>
 
@@ -40,13 +40,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- RabbitMQ (Spring AMQP) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
-        <!-- Eureka Client -->
+        <!-- Eureka Client (optional if using service discovery) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
@@ -71,35 +65,53 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Logstash Encoder -->
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-        </dependency>
-
-        <!-- Testing -->
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- H2 for tests -->
+        <!-- H2 (for tests only) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
+        </dependency>
+		
+        <!-- Logstash encoder -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
+
+        <!-- RabbitMQ (for async events to Fee Service) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Spring Boot executable JAR -->
+
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
         </plugins>
     </build>
 
